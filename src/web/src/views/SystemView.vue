@@ -1,41 +1,43 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import { DashboardOutlined, DesktopOutlined, HddOutlined, ApiOutlined } from '@ant-design/icons-vue';
+import { systemApi } from '@/api';
+import { message } from 'ant-design-vue';
 
 // 系统信息
 const systemInfo = ref({
   os: {
-    name: 'Windows 11 专业版',
-    version: '22H2',
-    build: '22621.3155',
-    architecture: 'x64',
+    name: '',
+    version: '',
+    build: '',
+    architecture: '',
   },
   hardware: {
-    cpu: 'Intel Core i7-12700K',
+    cpu: '',
     memory: {
-      total: '32GB',
-      used: '12.5GB',
-      free: '19.5GB',
+      total: '',
+      used: '',
+      free: '',
     },
     disk: {
       c: {
-        total: '512GB',
-        used: '256GB',
-        free: '256GB',
+        total: '',
+        used: '',
+        free: '',
       },
       d: {
-        total: '1TB',
-        used: '350GB',
-        free: '650GB',
+        total: '',
+        used: '',
+        free: '',
       },
     },
-    gpu: 'NVIDIA GeForce RTX 3080',
+    gpu: '',
   },
   network: {
-    hostname: 'DESKTOP-ABC123',
-    ipAddress: '192.168.1.100',
-    macAddress: '00:11:22:33:44:55',
-    isConnected: true,
+    hostname: '',
+    ipAddress: '',
+    macAddress: '',
+    isConnected: false,
   },
 });
 
@@ -45,36 +47,94 @@ const memoryUsage = ref(0);
 const diskUsage = ref(0);
 const networkUsage = ref(0);
 
-// 模拟加载系统信息
-onMounted(() => {
-  // 模拟API请求
-  setTimeout(() => {
+// 获取系统信息
+const fetchSystemInfo = async () => {
+  try {
+    loading.value = true;
+    const response = await systemApi.getSystemInfo();
+    console.log('系统信息 API 响应:', response);
+    
+    // 检查响应数据结构
+    const data = response.data;
+    
+    // 根据实际 API 返回结构映射数据
+    systemInfo.value = {
+      os: {
+        name: data.os || '',
+        version: data.version || '',
+        build: data.build || '',
+        architecture: data.architecture || '',
+      },
+      hardware: {
+        cpu: data.cpu?.model || '',
+        memory: {
+          total: data.memory?.total || '',
+          used: data.memory?.used || '',
+          free: data.memory?.free || '',
+        },
+        disk: {
+          c: {
+            total: data.disk?.c?.total || '',
+            used: data.disk?.c?.used || '',
+            free: data.disk?.c?.free || '',
+          },
+          d: {
+            total: data.disk?.d?.total || '',
+            used: data.disk?.d?.used || '',
+            free: data.disk?.d?.free || '',
+          },
+        },
+        gpu: data.gpu || '',
+      },
+      network: {
+        hostname: data.hostname || '',
+        ipAddress: data.ipAddress || '',
+        macAddress: data.macAddress || '',
+        isConnected: data.isConnected || false,
+      },
+    };
+    
     loading.value = false;
+  } catch (error) {
+    console.error('获取系统信息失败:', error);
+    message.error('获取系统信息失败，请稍后重试');
+    loading.value = false;
+  }
+};
+
+// 获取系统资源使用情况
+const fetchSystemResources = async () => {
+  try {
+    const response = await systemApi.getSystemResources();
+    console.log('系统资源 API 响应:', response);
     
-    // 模拟资源使用率数据
-    cpuUsage.value = 35;
-    memoryUsage.value = 39;
-    diskUsage.value = 50;
-    networkUsage.value = 15;
+    // 检查响应数据结构
+    const data = response.data;
     
-    // 模拟实时更新
-    setInterval(() => {
-      cpuUsage.value = Math.floor(25 + Math.random() * 30);
-      memoryUsage.value = Math.floor(35 + Math.random() * 15);
-      networkUsage.value = Math.floor(5 + Math.random() * 25);
-    }, 3000);
-  }, 1500);
+    // 根据实际 API 返回结构映射数据
+    cpuUsage.value = data.cpu_usage ? Math.round(data.cpu_usage) : 0;
+    memoryUsage.value = data.memory_usage ? Math.round(data.memory_usage) : 0;
+    diskUsage.value = data.disk_usage ? Math.round(data.disk_usage) : 0;
+    networkUsage.value = data.network_usage ? Math.round(data.network_usage) : 0;
+    
+    // 定时更新资源使用情况
+    setTimeout(fetchSystemResources, 5000);
+  } catch (error) {
+    console.error('获取系统资源使用情况失败:', error);
+    // 如果获取失败，5秒后重试
+    setTimeout(fetchSystemResources, 5000);
+  }
+};
+
+onMounted(() => {
+  // 获取系统信息和资源使用情况
+  fetchSystemInfo();
+  fetchSystemResources();
 });
 
 // 刷新系统信息
 const refreshSystemInfo = () => {
-  loading.value = true;
-  
-  // 模拟API请求
-  setTimeout(() => {
-    loading.value = false;
-    // 实际应用中这里会重新获取系统信息
-  }, 1000);
+  fetchSystemInfo();
 };
 </script>
 
@@ -105,7 +165,7 @@ const refreshSystemInfo = () => {
           <a-progress
             type="dashboard"
             :percent="cpuUsage"
-            :format="percent => `${percent}%`"
+            :format="(percent: number) => `${percent}%`"
             :strokeColor="{ '0%': '#108ee9', '100%': cpuUsage > 80 ? '#f5222d' : '#87d068' }"
           />
         </a-card>
@@ -119,7 +179,7 @@ const refreshSystemInfo = () => {
           <a-progress
             type="dashboard"
             :percent="memoryUsage"
-            :format="percent => `${percent}%`"
+            :format="(percent: number) => `${percent}%`"
             :strokeColor="{ '0%': '#108ee9', '100%': memoryUsage > 80 ? '#f5222d' : '#87d068' }"
           />
         </a-card>
@@ -133,7 +193,7 @@ const refreshSystemInfo = () => {
           <a-progress
             type="dashboard"
             :percent="diskUsage"
-            :format="percent => `${percent}%`"
+            :format="(percent: number) => `${percent}%`"
             :strokeColor="{ '0%': '#108ee9', '100%': diskUsage > 80 ? '#f5222d' : '#87d068' }"
           />
         </a-card>
@@ -147,7 +207,7 @@ const refreshSystemInfo = () => {
           <a-progress
             type="dashboard"
             :percent="networkUsage"
-            :format="percent => `${percent}%`"
+            :format="(percent: number) => `${percent}%`"
             :strokeColor="{ '0%': '#108ee9', '100%': '#87d068' }"
           />
         </a-card>

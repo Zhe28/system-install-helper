@@ -10,8 +10,10 @@ mod path_tests {
         let original_appdata = env::var("APPDATA").ok();
         
         // 设置测试环境变量
-        env::set_var("USERPROFILE", "C:\\Users\\TestUser");
-        env::set_var("APPDATA", "C:\\Users\\TestUser\\AppData\\Roaming");
+        unsafe {
+            env::set_var("USERPROFILE", "C:\\Users\\TestUser");
+            env::set_var("APPDATA", "C:\\Users\\TestUser\\AppData\\Roaming");
+        }
         
         // 测试环境变量替换
         let path_with_vars = "%USERPROFILE%\\Documents\\config.json";
@@ -28,16 +30,18 @@ mod path_tests {
         assert_eq!(expanded_path, path_without_vars);
         
         // 恢复原始环境变量
-        if let Some(val) = original_userprofile {
-            env::set_var("USERPROFILE", val);
-        } else {
-            env::remove_var("USERPROFILE");
-        }
-        
-        if let Some(val) = original_appdata {
-            env::set_var("APPDATA", val);
-        } else {
-            env::remove_var("APPDATA");
+        unsafe {
+            if let Some(val) = original_userprofile {
+                env::set_var("USERPROFILE", val);
+            } else {
+                env::remove_var("USERPROFILE");
+            }
+            
+            if let Some(val) = original_appdata {
+                env::set_var("APPDATA", val);
+            } else {
+                env::remove_var("APPDATA");
+            }
         }
     }
     

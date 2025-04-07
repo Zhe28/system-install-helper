@@ -1,5 +1,6 @@
 use actix_web::{web, HttpResponse, Responder, get};
 use log::info;
+use crate::services::system::{SystemService, SystemServiceImpl};
 
 pub fn config(cfg: &mut web::ServiceConfig) {
     cfg.service(get_system_info)
@@ -10,45 +11,30 @@ pub fn config(cfg: &mut web::ServiceConfig) {
 async fn get_system_info() -> impl Responder {
     info!("获取系统信息");
     
-    // 这里将来会获取实际的系统信息
-    // 目前返回一些示例数据
-    HttpResponse::Ok().json(serde_json::json!({
-        "os": "Windows 11",
-        "version": "22H2",
-        "architecture": "x64",
-        "hostname": "DESKTOP-PC",
-        "username": "User",
-        "cpu": {
-            "model": "Intel Core i7",
-            "cores": 8,
-            "threads": 16
-        },
-        "memory": {
-            "total": "16GB",
-            "available": "8GB"
-        },
-        "disk": {
-            "total": "512GB",
-            "available": "256GB"
+    let system_service = SystemServiceImpl::new();
+    match system_service.get_system_info().await {
+        Ok(info) => HttpResponse::Ok().json(info),
+        Err(e) => {
+            log::error!("获取系统信息失败: {}", e);
+            HttpResponse::InternalServerError().json(serde_json::json!({
+                "error": format!("获取系统信息失败: {}", e)
+            }))
         }
-    }))
+    }
 }
 
 #[get("/system/status")]
 async fn get_system_status() -> impl Responder {
     info!("获取系统状态");
     
-    // 这里将来会获取实际的系统状态
-    // 目前返回一些示例数据
-    HttpResponse::Ok().json(serde_json::json!({
-        "cpu_usage": 25.5,
-        "memory_usage": 45.2,
-        "disk_usage": 50.0,
-        "network": {
-            "download": "1.2 MB/s",
-            "upload": "0.5 MB/s"
-        },
-        "processes": 120,
-        "uptime": "2 days, 5 hours"
-    }))
+    let system_service = SystemServiceImpl::new();
+    match system_service.get_system_status().await {
+        Ok(status) => HttpResponse::Ok().json(status),
+        Err(e) => {
+            log::error!("获取系统状态失败: {}", e);
+            HttpResponse::InternalServerError().json(serde_json::json!({
+                "error": format!("获取系统状态失败: {}", e)
+            }))
+        }
+    }
 }

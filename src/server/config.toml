@@ -1,0 +1,15 @@
+[server]
+host = "127.0.0.1"
+port = 8080
+
+[software]
+repositories = [
+    "https://mirrors.tuna.tsinghua.edu.cn/winget/",
+    "https://mirrors.ustc.edu.cn/winget/",
+]
+default_install_path = 'C:\Program Files'
+cache_dir = '.\cache'
+
+[config_files]
+backup_dir = '.\backups'
+default_config_path = "%USERPROFILE%"

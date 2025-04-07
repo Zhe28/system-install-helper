@@ -2,7 +2,7 @@ import axios from 'axios';
 
 // 创建axios实例
 const api = axios.create({
-  baseURL: 'http://localhost:3000/api', // 后端API地址
+  baseURL: 'http://localhost:8080/api', // 后端API地址
   timeout: 10000, // 请求超时时间
   headers: {
     'Content-Type': 'application/json',
@@ -63,7 +63,7 @@ export const systemApi = {
   getSystemInfo: () => api.get('/system/info'),
   
   // 获取系统资源使用情况
-  getSystemResources: () => api.get('/system/resources'),
+  getSystemResources: () => api.get('/system/status'),
 };
 
 export default {
