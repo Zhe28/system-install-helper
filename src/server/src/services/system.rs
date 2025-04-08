@@ -3,8 +3,7 @@ use async_trait::async_trait;
 use log::info;
 use serde::{Deserialize, Serialize};
 use num_cpus;
-use sysinfo::{System, Disks, Networks};
-use std::collections::HashMap;
+use sysinfo::{System, Disks};
 use std::process::Command;
 
 #[derive(Debug, Serialize, Deserialize)]

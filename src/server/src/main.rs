@@ -1,6 +1,7 @@
 use actix_cors::Cors;
 use actix_web::{middleware, App, HttpServer};
 use log::info;
+use listenfd::ListenFd;
 
 mod config;
 mod handlers;
@@ -19,7 +20,7 @@ async fn main() -> std::io::Result<()> {
     
     info!("服务器监听地址: {}", bind_address);
     
-    HttpServer::new(move || {
+    let mut server = HttpServer::new(move || {
         let cors = Cors::default()
             .allow_any_origin()
             .allow_any_method()
@@ -30,8 +31,20 @@ async fn main() -> std::io::Result<()> {
             .wrap(middleware::Logger::default())
             .wrap(cors)
             .configure(handlers::config_app)
-    })
-    .bind(&bind_address)?
-    .run()
-    .await
+    });
+    
+    // 尝试使用 socket 监听器进行热重载
+    let mut listenfd = ListenFd::from_env();
+    server = match listenfd.take_tcp_listener(0)? {
+        Some(listener) => {
+            info!("使用系统提供的监听器进行热重载");
+            server.listen(listener)?
+        },
+        None => {
+            info!("使用标准绑定方式: {}", bind_address);
+            server.bind(&bind_address)?
+        }
+    };
+    
+    server.run().await
 }

@@ -1,0 +1,18 @@
+[software]
+id = "wechat"
+name = "微信"
+version = "3.9.2"
+description = "即时通讯工具"
+install_command = "winget install Tencent.WeChat"
+uninstall_command = "winget uninstall Tencent.WeChat"
+category = "Communication"
+
+[tags]
+tags = ["社交", "通讯", "聊天"]
+
+[dependencies]
+dependencies = []
+
+[paths]
+install_path = "C:\\Program Files (x86)\\Tencent\\WeChat"
+config_files = []

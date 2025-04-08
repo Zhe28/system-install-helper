@@ -3,3 +3,5 @@
 
 # Cargo.lock
 Cargo.lock
+
+config/software/*.toml

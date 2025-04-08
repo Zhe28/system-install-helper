@@ -56,6 +56,42 @@ pub enum InstallStatus {
     Failed,
 }
 
+// TOML配置文件相关结构体
+#[derive(Debug, Serialize, Deserialize)]
+pub struct SoftwareToml {
+    pub software: SoftwareInfo,
+    pub tags: Tags,
+    pub dependencies: Dependencies,
+    pub paths: Paths,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct SoftwareInfo {
+    pub id: String,
+    pub name: String,
+    pub version: String,
+    pub description: Option<String>,
+    pub install_command: String,
+    pub uninstall_command: Option<String>,
+    pub category: String,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct Tags {
+    pub tags: Vec<String>,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct Dependencies {
+    pub dependencies: Vec<String>,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct Paths {
+    pub install_path: Option<String>,
+    pub config_files: Vec<String>,
+}
+
 impl Software {
     pub fn new(
         name: String,

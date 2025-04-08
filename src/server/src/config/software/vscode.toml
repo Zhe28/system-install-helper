@@ -1,0 +1,18 @@
+[software]
+id = "vscode"
+name = "Visual Studio Code"
+version = "1.85.0"
+description = "轻量级代码编辑器"
+install_command = "winget install Microsoft.VisualStudioCode"
+uninstall_command = "winget uninstall Microsoft.VisualStudioCode"
+category = "Development"
+
+[tags]
+tags = ["编辑器", "开发工具", "IDE"]
+
+[dependencies]
+dependencies = []
+
+[paths]
+install_path = "C:\\Program Files\\Microsoft VS Code"
+config_files = ["%APPDATA%\\Code\\User\\settings.json"]

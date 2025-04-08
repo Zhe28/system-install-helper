@@ -1,0 +1,18 @@
+[software]
+id = "git"
+name = "Git"
+version = "2.42.0"
+description = "分布式版本控制系统"
+install_command = "winget install Git.Git"
+uninstall_command = "winget uninstall Git.Git"
+category = "Development"
+
+[tags]
+tags = ["版本控制", "开发工具"]
+
+[dependencies]
+dependencies = []
+
+[paths]
+install_path = "C:\\Program Files\\Git"
+config_files = ["%USERPROFILE%\\.gitconfig"]

@@ -1,0 +1,18 @@
+[software]
+id = "chrome"
+name = "Google Chrome"
+version = "120.0.6099.130"
+description = "网页浏览器"
+install_command = "winget install Google.Chrome"
+uninstall_command = "winget uninstall Google.Chrome"
+category = "Communication"
+
+[tags]
+tags = ["浏览器", "网络工具"]
+
+[dependencies]
+dependencies = []
+
+[paths]
+install_path = "C:\\Program Files\\Google\\Chrome"
+config_files = []
