@@ -1,29 +1,36 @@
-use crate::config::software_config;
 use crate::models::software::{Software, SoftwareInstallRequest};
-use crate::services::software::{SoftwareService, SoftwareServiceImpl};
+use crate::services::software_service::{SoftwareService, SoftwareServiceImpl};
 use actix_web::{HttpResponse, Responder, get, post, web};
 use log::info;
 
 pub fn config(cfg: &mut web::ServiceConfig) {
-    cfg.service(get_all_software)
-        .service(get_software_by_id)
-        .service(install_software)
-        .service(get_install_status)
-        .service(search_software)
-        .service(edit_software);
+    cfg.service(
+        web::scope("/software")
+            .service(get_all_software)
+            .service(get_software_by_id)
+            .service(install_software)
+            .service(get_install_status)
+            .service(search_software)
+            .service(edit_software),
+    );
 }
 
-#[get("/software")]
+#[get("/")]
 async fn get_all_software() -> impl Responder {
     info!("获取所有软件列表");
 
     // 从配置目录中读取所有软件信息
-    let software_list = software_config::load_all_software();
+    // let software_list = software_config::load_all_software();
+    let software_service = SoftwareServiceImpl::new();
+    let software_list = software_service.get_all_software().await;
 
-    HttpResponse::Ok().json(software_list)
+    match software_list {
+        Ok(software_list) => HttpResponse::Ok().json(software_list),
+        Err(e) => HttpResponse::InternalServerError().body(e.to_string()),
+    }
 }
 
-#[post("/software/edit")]
+#[post("/edit")]
 async fn edit_software(request: web::Json<Software>) -> impl Responder {
     info!("编辑软件，ID: {}", request.id);
 
@@ -35,7 +42,7 @@ async fn edit_software(request: web::Json<Software>) -> impl Responder {
     HttpResponse::Ok().body(result.unwrap())
 }
 
-#[get("/software/{id}")]
+#[get("/{id}")]
 async fn get_software_by_id(path: web::Path<String>) -> impl Responder {
     let id = path.into_inner();
     info!("获取软件详情，ID: {}", id);
@@ -53,7 +60,7 @@ async fn get_software_by_id(path: web::Path<String>) -> impl Responder {
     HttpResponse::Ok().json(software)
 }
 
-#[post("/software/install")]
+#[post("/install")]
 async fn install_software(request: web::Json<SoftwareInstallRequest>) -> impl Responder {
     info!("安装软件请求: {:?}", request);
 
@@ -66,7 +73,7 @@ async fn install_software(request: web::Json<SoftwareInstallRequest>) -> impl Re
     }))
 }
 
-#[get("/software/install/{task_id}")]
+#[get("/install/{task_id}")]
 async fn get_install_status(path: web::Path<String>) -> impl Responder {
     let task_id = path.into_inner();
     info!("获取安装状态，任务ID: {}", task_id);
@@ -81,7 +88,7 @@ async fn get_install_status(path: web::Path<String>) -> impl Responder {
     }))
 }
 
-#[get("/software/search")]
+#[get("/search")]
 async fn search_software(
     query: web::Query<std::collections::HashMap<String, String>>,
 ) -> impl Responder {

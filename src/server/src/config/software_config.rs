@@ -1,5 +1,5 @@
 use std::fs;
-use std::path::{Path, PathBuf};
+use std::path::Path;
 use log::{info, error};
 use crate::models::software::{
     Software, SoftwareCategory, SoftwareToml, SoftwareInfo, 
@@ -50,7 +50,7 @@ pub fn load_software_from_toml(file_path: &Path) -> Result<Software, anyhow::Err
 pub fn load_all_software() -> Vec<Software> {
     let config_dir = Path::new("config/software");
     let mut software_list = Vec::new();
-    
+
     if !config_dir.exists() {
         error!("软件配置目录不存在: {:?}", config_dir);
         return software_list;

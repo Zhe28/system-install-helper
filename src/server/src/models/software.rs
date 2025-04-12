@@ -4,18 +4,31 @@ use chrono::{DateTime, Utc};
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct Software {
+    // 唯一ID
     pub id: String,
+    // 软件名称
     pub name: String,
+    // 软件版本
     pub version: String,
+    // 软件描述
     pub description: Option<String>,
+    // 安装命令
     pub install_command: String,
+    // 软件卸载命令
     pub uninstall_command: Option<String>,
+    // 软件类别
     pub category: SoftwareCategory,
+    // 标签
     pub tags: Vec<String>,
+    // 依赖项
     pub dependencies: Vec<String>,
+    // 安装路径
     pub install_path: Option<String>,
+    // 配置文件
     pub config_files: Vec<String>,
+    // 创建时间
     pub created_at: DateTime<Utc>,
+    // 更新时间
     pub updated_at: DateTime<Utc>,
 }
 

@@ -1,0 +1,4 @@
+# Rust 格式化配置
+tab_spaces = 2  # 设置缩进为2个空格
+max_width = 100  # 每行最大宽度
+edition = "2021"  # 使用Rust 2021版本
