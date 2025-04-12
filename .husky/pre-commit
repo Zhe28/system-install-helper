@@ -2,4 +2,4 @@
 . "$(dirname -- "$0")/_/husky.sh"
 
 # 在提交前运行前端代码的 lint 检查
-cd src/web && bun run lint
+cd src/web && npm run lint:oxlint

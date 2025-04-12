@@ -67,6 +67,9 @@ cargo build
 
 ```bash
 cargo run
+
+# 项目环境变量
+RUST_LOG=(debug|info|warn|error) cargo run
 ```
 
 服务默认在 `http://localhost:3000` 启动。

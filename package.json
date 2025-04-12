@@ -13,6 +13,6 @@
     "src/web"
   ],
   "scripts": {
-    "prepare": "husky install"
+    "prepare": "husky"
   }
 }
